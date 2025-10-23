@@ -109,12 +109,12 @@ lang = st.sidebar.selectbox(
     options=list(LANGUAGES.keys()),
     format_func=lambda k: LANGUAGES[k],
     index=0 if st.session_state.lang=="ko" else 1,
-    label_visibility="collapsed",
+    label_visibility="collapsed"
 )
 st.session_state.lang = lang
-_lang = lang  # safe alias for sidebar blocks & params
-
-    st.sidebar.markdown("### 🔗 " + t(lang, "공유 링크 만들기", "Create share link"))
+_lang = lang
+st.session_state.lang = lang
+    _lang = lang  # safe alias for sidebar blocks & params
 
     # ----------------- Main body -----------------
     st.title(APP_TITLE)
@@ -209,9 +209,20 @@ _lang = lang  # safe alias for sidebar blocks & params
                      "[YouTube](" + youtube_search_link(mood + " cooking playlist") + ")")
 
     # Share-link params (safe)
+
+
+    st.sidebar.markdown("### 🔗 " + ("공유 링크 만들기" if _lang=="ko" else "Create share link"))
+
+
     params = {"lang": _lang, "have": ",".join(have_list),
+
+
               "allergy": ",".join(k for k,v in allergy.items() if v), "mood": mood}
+
+
     st.sidebar.code("?" + urlencode(params, doseq=True))
+
+
     st.sidebar.caption("사이드바 링크를 복사해 공유하세요." if _lang=="ko" else "Copy the sidebar link to share.")
 
 if __name__ == "__main__":
