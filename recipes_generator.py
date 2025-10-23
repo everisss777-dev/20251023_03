@@ -26,7 +26,6 @@ def est_macros(main_ko):
     return 300, 8, 8, 35
 
 def build_row(i):
-    import random
     m = random.randrange(len(KR_METHODS))
     method_kr, method_en = KR_METHODS[m], EN_METHODS[m]
     (base_kr, base_en) = random.choice(BASES)

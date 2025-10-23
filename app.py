@@ -95,6 +95,7 @@ def recipe_card(recipe, lang, section_key=""):
             data=md.encode("utf-8"),
             file_name=(recipe["name_ko"] if lang=="ko" else recipe["name_en"]) + ".md",
             mime="text/markdown",
+            key=f"dl_{section_key}_{fid}_{lang}"
         )
 
 def main():
@@ -105,7 +106,6 @@ def main():
     st.session_state.lang = lang
 
     st.sidebar.markdown("### 🔗 " + t(lang, "공유 링크 만들기", "Create share link"))
-
     st.title(APP_TITLE)
 
     st.markdown("### 🧺 " + t(lang, "냉장고 재료 입력", "Enter your fridge/pantry"))
