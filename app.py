@@ -167,22 +167,30 @@ def main():
             recipe_card(row, lang, section_key)
 
     # ----- Sidebar: Nutrition calculator -----
-    st.sidebar.markdown("### 🧮 " + ("영양소 계산기" if lang=="ko" else "Nutrition calculator"))
-    with st.sidebar.form("nutri"):
-        st.write("재료와 중량(그램) 입력" if lang=="ko" else "Enter ingredients and grams")
-        ing1 = st.text_input("재료 1" if lang=="ko" else "Ingredient 1", key="n_ing1")
-        g1 = st.number_input("g1", min_value=0, value=100, key="n_g1")
-        ing2 = st.text_input("재료 2" if lang=="ko" else "Ingredient 2", key="n_ing2")
-        g2 = st.number_input("g2", min_value=0, value=0, key="n_g2")
-        ing3 = st.text_input("재료 3" if lang=="ko" else "Ingredient 3", key="n_ing3")
-        g3 = st.number_input("g3", min_value=0, value=0, key="n_g3")
-        submitted = st.form_submit_button("계산" if lang=="ko" else "Calculate")
-        if submitted:
-            items = [(ing1, g1), (ing2, g2), (ing3, g3)]
-            res = sum_nutrition(items)
-            st.write(res)
+st.sidebar.markdown("### 🧮 " + ("영양소 계산기" if lang=="ko" else "Nutrition calculator"))
+with st.sidebar.form("nutri"):
+    st.write("재료와 중량(그램) 입력" if lang=="ko" else "Enter ingredients and grams")
 
-    # ----- Sidebar: Music -----
+    def ing_row(idx:int, default_g:int=0):
+        c1, c2 = st.columns([3, 2], gap="small")
+        with c1:
+            ing = st.text_input(("재료 " if lang=="ko" else "Ingredient ") + str(idx), key=f"n_ing{idx}")
+        with c2:
+            g = st.number_input(f"g{idx}", min_value=0, value=default_g, key=f"n_g{idx}")
+        return ing, g
+
+    ing1, g1 = ing_row(1, 100)
+    ing2, g2 = ing_row(2, 0)
+    ing3, g3 = ing_row(3, 0)
+
+    submitted = st.form_submit_button("계산" if lang=="ko" else "Calculate")
+    if submitted:
+        items = [(ing1, g1), (ing2, g2), (ing3, g3)]
+        res = sum_nutrition(items)
+        st.write(res)
+
+# ----- Sidebar: Music -----
+# ----- Sidebar: Music -----
     st.sidebar.markdown("### 🎵 " + t(lang, "요리할 때 들을 음악", "Music to cook with"))
     mood = st.sidebar.selectbox(
         t(lang, "무드 선택", "Choose a mood"),
