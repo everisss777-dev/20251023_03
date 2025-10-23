@@ -102,21 +102,20 @@ def main():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
     init_state()
 
-    _lang = st.session_state.get("lang", "ko")  # predefine safe alias
+    lang = st.session_state.get("lang", "ko")
     # Language select (kept in sidebar)
     st.sidebar.markdown("### 🌐 Language / 언어")
 lang = st.sidebar.selectbox(
     " ",
     options=list(LANGUAGES.keys()),
     format_func=lambda k: LANGUAGES[k],
-    index=0 if _lang == "ko" else 1,
-    label_visibility="collapsed",
+    index=0 if st.session_state.lang=="ko" else 1,
+    label_visibility="collapsed"
 )
-if lang != _lang:
-    st.session_state["lang"] = lang
-    _lang = lang
 st.session_state.lang = lang
-    _lang = lang  # safe alias for sidebar blocks & params
+lang = lang
+st.session_state.lang = lang
+    lang = lang  # safe alias for sidebar blocks & params
 
     # ----------------- Main body -----------------
     st.title(APP_TITLE)
@@ -181,14 +180,14 @@ st.session_state.lang = lang
             recipe_card(row, lang, section_key)
 
     # ----------------- Sidebar blocks -----------------
-    st.sidebar.markdown("### 🧮 " + ("영양소 계산기" if _lang=="ko" else "Nutrition calculator"))
+    st.sidebar.markdown("### 🧮 " + ("영양소 계산기" if lang=="ko" else "Nutrition calculator"))
     with st.sidebar.form("nutri"):
-        st.write("재료와 중량(그램) 입력" if _lang=="ko" else "Enter ingredients and grams")
+        st.write("재료와 중량(그램) 입력" if lang=="ko" else "Enter ingredients and grams")
 
         def ing_row(idx:int, default_g:int=0):
             c1, c2 = st.columns([3, 2], gap="small")
             with c1:
-                ing = st.text_input(("재료 " if _lang=="ko" else "Ingredient ") + str(idx), key=f"n_ing{idx}")
+                ing = st.text_input(("재료 " if lang=="ko" else "Ingredient ") + str(idx), key=f"n_ing{idx}")
             with c2:
                 g = st.number_input(f"g{idx}", min_value=0, value=default_g, key=f"n_g{idx}")
             return ing, g
@@ -197,14 +196,14 @@ st.session_state.lang = lang
         ing2, g2 = ing_row(2, 0)
         ing3, g3 = ing_row(3, 0)
 
-        submitted = st.form_submit_button("계산" if _lang=="ko" else "Calculate")
+        submitted = st.form_submit_button("계산" if lang=="ko" else "Calculate")
         if submitted:
             items = [(ing1, g1), (ing2, g2), (ing3, g3)]
             res = sum_nutrition(items)
             st.write(res)
 
-    st.sidebar.markdown("### 🎵 " + ("요리할 때 들을 음악" if _lang=="ko" else "Music to cook with"))
-    mood = st.sidebar.selectbox(("무드 선택" if _lang=="ko" else "Choose a mood"),
+    st.sidebar.markdown("### 🎵 " + ("요리할 때 들을 음악" if lang=="ko" else "Music to cook with"))
+    mood = st.sidebar.selectbox(("무드 선택" if lang=="ko" else "Choose a mood"),
                                 ["chill", "energy", "focus", "retro", "k-pop", "lofi"],
                                 key="sidebar_mood")
     st.sidebar.write("[Spotify](" + spotify_search_link(mood + " cooking playlist") + ") | "
@@ -213,10 +212,10 @@ st.session_state.lang = lang
     # Share-link params (safe)
 
 
-    st.sidebar.markdown("### 🔗 " + ("공유 링크 만들기" if _lang=="ko" else "Create share link"))
+    st.sidebar.markdown("### 🔗 " + ("공유 링크 만들기" if lang=="ko" else "Create share link"))
 
 
-    params = {"lang": _lang, "have": ",".join(have_list),
+    params = {"lang": lang, "have": ",".join(have_list),
 
 
               "allergy": ",".join(k for k,v in allergy.items() if v), "mood": mood}
@@ -225,7 +224,7 @@ st.session_state.lang = lang
     st.sidebar.code("?" + urlencode(params, doseq=True))
 
 
-    st.sidebar.caption("사이드바 링크를 복사해 공유하세요." if _lang=="ko" else "Copy the sidebar link to share.")
+    st.sidebar.caption("사이드바 링크를 복사해 공유하세요." if lang=="ko" else "Copy the sidebar link to share.")
 
 if __name__ == "__main__":
     main()
