@@ -108,10 +108,10 @@ lang = st.sidebar.selectbox(
     " ",
     options=list(LANGUAGES.keys()),
     format_func=lambda k: LANGUAGES[k],
-    index=0 if st.session_state.get("lang", "ko") == "ko" else 1,
-    label_visibility="collapsed",
+    index=0 if st.session_state.lang=="ko" else 1,
+    label_visibility="collapsed"
 )
-st.session_state["lang"] = lang
+st.session_state.lang = lang
 _lang = lang
 st.session_state.lang = lang
     _lang = lang  # safe alias for sidebar blocks & params
