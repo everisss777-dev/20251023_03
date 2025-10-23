@@ -130,9 +130,10 @@ def main():
     df = load_data()
     filtered = apply_filters(df, have_multi, allergy, lang)
 
-    st.markdown("### 🍱 " + t(lang, "3끼 자동 구성 (재료 소진 우선)", "Auto 3-meal plan (maximize using your items)"))
-    top3 = pick_best_three(filtered if not filtered.empty else df.head(100), have_multi)
-    if top3:
+    if have_multi:
+        st.markdown("### 🍱 " + t(lang, "3끼 자동 구성 (재료 소진 우선)", "Auto 3-meal plan (maximize using your items)"))
+        top3 = pick_best_three(filtered if not filtered.empty else df.head(100), have_multi)
+        if top3:
         cols = st.columns(len(top3))
         chosen = []
         section_key = "top3"
