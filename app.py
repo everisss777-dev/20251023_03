@@ -203,7 +203,7 @@ with st.sidebar.form("nutri"):
     st.sidebar.write(link_str)
 
     # ----- Share link params (top-level, no extra indent) -----
-    params = {"lang": lang, "have": ",".join(have_list),
+    params = {"lang": _lang, "have": ",".join(have_list),
               "allergy": ",".join(k for k,v in allergy.items() if v), "mood": mood}
     st.sidebar.code("?" + urlencode(params, doseq=True))
     st.sidebar.caption(t(lang, "사이드바 링크를 복사해 공유하세요.", "Copy the sidebar link to share."))
