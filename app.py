@@ -152,7 +152,9 @@ def main():
     max_show = st.slider(t(lang, "표시 개수", "Show count"), 5, 50, 12)
     section_key = "results"
     for _, row in filtered.head(max_show).iterrows():
-        recipe_card(row, lang, section_key)
+        title = row["name_ko"] if lang=="ko" else row["name_en"]
+        with st.expander(title, expanded=False):
+            recipe_card(row, lang, section_key)
 
     st.markdown("### ⭐ " + t(lang, "즐겨찾기", "Favorites"))
     fav_ids = list(st.session_state.favorites)
