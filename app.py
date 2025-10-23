@@ -166,23 +166,22 @@ def main():
         for _, row in fav_df.iterrows():
             recipe_card(row, lang, section_key)
 
-    st.sidebar.markdown("### 🧮 " + t(lang, "영양소 계산기", "Nutrition calculator"))
+    st.sidebar.markdown("### 🧮 " + ( "영양소 계산기" if lang=="ko" else "Nutrition calculator"))
 with st.sidebar.form("nutri"):
-    st.write(t(lang, "재료와 중량(그램) 입력", "Enter ingredients and grams"))
-    ing1 = st.text_input(t(lang, "재료 1", "Ingredient 1"), key="n_ing1")
+    st.write("재료와 중량(그램) 입력" if lang=="ko" else "Enter ingredients and grams")
+    ing1 = st.text_input("재료 1" if lang=="ko" else "Ingredient 1", key="n_ing1")
     g1 = st.number_input("g1", min_value=0, value=100, key="n_g1")
-    ing2 = st.text_input(t(lang, "재료 2", "Ingredient 2"), key="n_ing2")
+    ing2 = st.text_input("재료 2" if lang=="ko" else "Ingredient 2", key="n_ing2")
     g2 = st.number_input("g2", min_value=0, value=0, key="n_g2")
-    ing3 = st.text_input(t(lang, "재료 3", "Ingredient 3"), key="n_ing3")
+    ing3 = st.text_input("재료 3" if lang=="ko" else "Ingredient 3", key="n_ing3")
     g3 = st.number_input("g3", min_value=0, value=0, key="n_g3")
-    submitted = st.form_submit_button(t(lang, "계산", "Calculate"))
+    submitted = st.form_submit_button("계산" if lang=="ko" else "Calculate")
     if submitted:
         items = [(ing1, g1), (ing2, g2), (ing3, g3)]
         res = sum_nutrition(items)
         st.write(res)
 
-    # ----- Move Music block into the sidebar -----
-    st.sidebar.markdown("### 🎵 " + t(lang, "요리할 때 들을 음악", "Music to cook with"))
+st.sidebar.markdown("### 🎵 " + t(lang, "요리할 때 들을 음악", "Music to cook with"))
     mood = st.sidebar.selectbox(
         t(lang, "무드 선택", "Choose a mood"),
         ["chill", "energy", "focus", "retro", "k-pop", "lofi"],
