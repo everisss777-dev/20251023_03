@@ -109,7 +109,6 @@ def main():
     st.session_state.lang = lang
     _lang = lang  # safe alias for sidebar blocks & params
 
-    st.sidebar.markdown("### 🔗 " + t(lang, "공유 링크 만들기", "Create share link"))
 
     # ----------------- Main body -----------------
     st.title(APP_TITLE)
@@ -204,6 +203,7 @@ def main():
                      "[YouTube](" + youtube_search_link(mood + " cooking playlist") + ")")
 
     # Share-link params (safe)
+    st.sidebar.markdown("### 🔗 " + ("공유 링크 만들기" if _lang=="ko" else "Create share link"))
     params = {"lang": _lang, "have": ",".join(have_list),
               "allergy": ",".join(k for k,v in allergy.items() if v), "mood": mood}
     st.sidebar.code("?" + urlencode(params, doseq=True))
