@@ -101,21 +101,29 @@ def recipe_card(recipe, lang, section_key=""):
 def main():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
     init_state()
+
+    # Language select (kept in sidebar)
     lang = st.sidebar.selectbox("Language / 언어", options=list(LANGUAGES.keys()),
-                                format_func=lambda k: LANGUAGES[k], index=0 if st.session_state.lang=="ko" else 1)
+                                format_func=lambda k: LANGUAGES[k],
+                                index=0 if st.session_state.lang=="ko" else 1)
     st.session_state.lang = lang
+    _lang = lang  # safe alias for sidebar blocks & params
 
     st.sidebar.markdown("### 🔗 " + t(lang, "공유 링크 만들기", "Create share link"))
+
+    # ----------------- Main body -----------------
     st.title(APP_TITLE)
 
     st.markdown("### 🧺 " + t(lang, "냉장고 재료 입력", "Enter your fridge/pantry"))
-    have_text = st.text_input(t(lang, "쉼표(,)로 구분. 예: 두부(내일 만료), 대파, 김치", "Comma-separated. e.g. Tofu(expires tomorrow), Onion, Kimchi"))
+    have_text = st.text_input(t(lang, "쉼표(,)로 구분. 예: 두부(내일 만료), 대파, 김치",
+                                "Comma-separated. e.g. Tofu(expires tomorrow), Onion, Kimchi"))
     expiring = detect_expiring_tokens(have_text)
     if expiring:
         st.info(t(lang, "임박 재료:", "Expiring soon: ") + ", ".join([f"{a}({b})" for a,b in expiring]))
 
     have_list = [s.strip() for s in have_text.split(",") if s.strip()]
-    have_multi = st.multiselect(t(lang, "보유 재료 멀티셀렉트", "Multi-select your ingredients"), options=have_list, default=have_list)
+    have_multi = st.multiselect(t(lang, "보유 재료 멀티셀렉트", "Multi-select your ingredients"),
+                                options=have_list, default=have_list)
 
     st.markdown("### 🚫 " + t(lang, "알레르기 제외", "Exclude allergens"))
     allergy = {
@@ -130,7 +138,7 @@ def main():
     df = load_data()
     filtered = apply_filters(df, have_multi, allergy, lang)
 
-    # ---------- Three-meal plan (only when have_multi is non-empty) ----------
+    # Three-meal plan only when user provided ingredients
     if have_multi:
         st.markdown("### 🍱 " + t(lang, "3끼 자동 구성 (재료 소진 우선)", "Auto 3-meal plan (maximize using your items)"))
         top3 = pick_best_three(filtered if not filtered.empty else df.head(100), have_multi)
@@ -146,7 +154,6 @@ def main():
             with st.expander("🛒 " + t(lang, "부족한 재료 장보기 리스트", "Shopping list for missing items")):
                 st.write("**KR**: " + (", ".join(miss_ko) if miss_ko else t(lang, "없음", "None")))
                 st.write("**EN**: " + (", ".join(miss_en) if miss_en else "None"))
-    # ------------------------------------------------------------------------
 
     st.markdown("### 📚 " + t(lang, "추천 레시피", "Recommended recipes"))
     max_show = st.slider(t(lang, "표시 개수", "Show count"), 5, 50, 12)
@@ -166,47 +173,41 @@ def main():
         for _, row in fav_df.iterrows():
             recipe_card(row, lang, section_key)
 
-    # ----- Sidebar: Nutrition calculator -----
-_lang = st.session_state.get("lang", "ko")  # safe language accessor
-st.sidebar.markdown("### 🧮 " + ("영양소 계산기" if _lang=="ko" else "Nutrition calculator"))
-with st.sidebar.form("nutri"):
-    st.write("재료와 중량(그램) 입력" if _lang=="ko" else "Enter ingredients and grams")
+    # ----------------- Sidebar blocks -----------------
+    st.sidebar.markdown("### 🧮 " + ("영양소 계산기" if _lang=="ko" else "Nutrition calculator"))
+    with st.sidebar.form("nutri"):
+        st.write("재료와 중량(그램) 입력" if _lang=="ko" else "Enter ingredients and grams")
 
-    def ing_row(idx:int, default_g:int=0):
-        c1, c2 = st.columns([3, 2], gap="small")
-        with c1:
-            ing = st.text_input(("재료 " if _lang=="ko" else "Ingredient ") + str(idx), key=f"n_ing{idx}")
-        with c2:
-            g = st.number_input(f"g{idx}", min_value=0, value=default_g, key=f"n_g{idx}")
-        return ing, g
+        def ing_row(idx:int, default_g:int=0):
+            c1, c2 = st.columns([3, 2], gap="small")
+            with c1:
+                ing = st.text_input(("재료 " if _lang=="ko" else "Ingredient ") + str(idx), key=f"n_ing{idx}")
+            with c2:
+                g = st.number_input(f"g{idx}", min_value=0, value=default_g, key=f"n_g{idx}")
+            return ing, g
 
-    ing1, g1 = ing_row(1, 100)
-    ing2, g2 = ing_row(2, 0)
-    ing3, g3 = ing_row(3, 0)
+        ing1, g1 = ing_row(1, 100)
+        ing2, g2 = ing_row(2, 0)
+        ing3, g3 = ing_row(3, 0)
 
-    submitted = st.form_submit_button("계산" if _lang=="ko" else "Calculate")
-    if submitted:
-        items = [(ing1, g1), (ing2, g2), (ing3, g3)]
-        res = sum_nutrition(items)
-        st.write(res)
+        submitted = st.form_submit_button("계산" if _lang=="ko" else "Calculate")
+        if submitted:
+            items = [(ing1, g1), (ing2, g2), (ing3, g3)]
+            res = sum_nutrition(items)
+            st.write(res)
 
-# ----- Sidebar: Music -----
-# ----- Sidebar: Music -----
-# ----- Sidebar: Music -----
     st.sidebar.markdown("### 🎵 " + ("요리할 때 들을 음악" if _lang=="ko" else "Music to cook with"))
-    mood = st.sidebar.selectbox(
-        ("무드 선택" if _lang=="ko" else "Choose a mood"),
-        ["chill", "energy", "focus", "retro", "k-pop", "lofi"],
-        key="sidebar_mood"
-    )
-    link_str = "[Spotify](" + spotify_search_link(mood + " cooking playlist") + ") | " + "[YouTube](" + youtube_search_link(mood + " cooking playlist") + ")"
-    st.sidebar.write(link_str)
+    mood = st.sidebar.selectbox(("무드 선택" if _lang=="ko" else "Choose a mood"),
+                                ["chill", "energy", "focus", "retro", "k-pop", "lofi"],
+                                key="sidebar_mood")
+    st.sidebar.write("[Spotify](" + spotify_search_link(mood + " cooking playlist") + ") | "
+                     "[YouTube](" + youtube_search_link(mood + " cooking playlist") + ")")
 
-    # ----- Share link params (top-level, no extra indent) -----
+    # Share-link params (safe)
     params = {"lang": _lang, "have": ",".join(have_list),
               "allergy": ",".join(k for k,v in allergy.items() if v), "mood": mood}
     st.sidebar.code("?" + urlencode(params, doseq=True))
-    st.sidebar.caption(t(lang, "사이드바 링크를 복사해 공유하세요.", "Copy the sidebar link to share."))
+    st.sidebar.caption("사이드바 링크를 복사해 공유하세요." if _lang=="ko" else "Copy the sidebar link to share.")
 
 if __name__ == "__main__":
     main()
