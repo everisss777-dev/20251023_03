@@ -64,7 +64,7 @@ def pick_best_three(df, have_ings):
         remaining = remaining.iloc[1:]
     return chosen
 
-def recipe_card(recipe, lang):
+def recipe_card(recipe, lang, section_key=""):
     with st.container(border=True):
         name = recipe["name_ko"] if lang=="ko" else recipe["name_en"]
         st.subheader(name)
@@ -84,7 +84,7 @@ def recipe_card(recipe, lang):
 
         fid = int(recipe["id"])
         fav_on = fid in st.session_state.favorites
-        if st.toggle(t(lang, "즐겨찾기", "Favorite"), value=fav_on, key=f"fav_{fid}"):
+        if st.toggle(t(lang, "즐겨찾기", "Favorite"), value=fav_on, key=f"fav_{section_key}_{fid}"):
             st.session_state.favorites.add(fid)
         else:
             st.session_state.favorites.discard(fid)
@@ -135,9 +135,10 @@ def main():
     if top3:
         cols = st.columns(len(top3))
         chosen = []
+        section_key = "top3"
         for c, row in zip(cols, top3):
             with c:
-                recipe_card(row, lang)
+                recipe_card(row, lang, section_key)
                 chosen.append(row)
         miss_ko, miss_en = build_shopping_list(have_multi, chosen)
         with st.expander("🛒 " + t(lang, "부족한 재료 장보기 리스트", "Shopping list for missing items")):
@@ -146,8 +147,9 @@ def main():
 
     st.markdown("### 📚 " + t(lang, "추천 레시피", "Recommended recipes"))
     max_show = st.slider(t(lang, "표시 개수", "Show count"), 5, 50, 12)
+    section_key = "results"
     for _, row in filtered.head(max_show).iterrows():
-        recipe_card(row, lang)
+        recipe_card(row, lang, section_key)
 
     st.markdown("### ⭐ " + t(lang, "즐겨찾기", "Favorites"))
     fav_ids = list(st.session_state.favorites)
@@ -155,8 +157,9 @@ def main():
         st.write(t(lang, "즐겨찾기가 비어 있습니다.", "No favorites yet."))
     else:
         fav_df = df[df["id"].isin(fav_ids)]
+        section_key = "favs"
         for _, row in fav_df.iterrows():
-            recipe_card(row, lang)
+            recipe_card(row, lang, section_key)
 
     st.markdown("### 🧮 " + t(lang, "영양소 계산기", "Nutrition calculator"))
     with st.form("nutri"):
