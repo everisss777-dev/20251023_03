@@ -130,23 +130,24 @@ def main():
     df = load_data()
     filtered = apply_filters(df, have_multi, allergy, lang)
 
+    # ---------- Three-meal plan (only when have_multi is non-empty) ----------
     if have_multi:
-        if have_multi:
-if have_multi:
-    st.markdown("### 🍱 " + t(lang, "3끼 자동 구성 (재료 소진 우선)", "Auto 3-meal plan (maximize using your items)"))
-    top3 = pick_best_three(filtered if not filtered.empty else df.head(100), have_multi)
-    if top3:
-        cols = st.columns(len(top3))
-        chosen = []
-        section_key = "top3"
-        for c, row in zip(cols, top3):
-            with c:
-                recipe_card(row, lang, section_key)
-                chosen.append(row)
-        miss_ko, miss_en = build_shopping_list(have_multi, chosen)
-        with st.expander("🛒 " + t(lang, "부족한 재료 장보기 리스트", "Shopping list for missing items")):
-            st.write("**KR**: " + (", ".join(miss_ko) if miss_ko else t(lang, "없음", "None")))
-            st.write("**EN**: " + (", ".join(miss_en) if miss_en else "None"))
+        st.markdown("### 🍱 " + t(lang, "3끼 자동 구성 (재료 소진 우선)", "Auto 3-meal plan (maximize using your items)"))
+        top3 = pick_best_three(filtered if not filtered.empty else df.head(100), have_multi)
+        if top3:
+            cols = st.columns(len(top3))
+            chosen = []
+            section_key = "top3"
+            for c, row in zip(cols, top3):
+                with c:
+                    recipe_card(row, lang, section_key)
+                    chosen.append(row)
+            miss_ko, miss_en = build_shopping_list(have_multi, chosen)
+            with st.expander("🛒 " + t(lang, "부족한 재료 장보기 리스트", "Shopping list for missing items")):
+                st.write("**KR**: " + (", ".join(miss_ko) if miss_ko else t(lang, "없음", "None")))
+                st.write("**EN**: " + (", ".join(miss_en) if miss_en else "None"))
+    # ------------------------------------------------------------------------
+
     st.markdown("### 📚 " + t(lang, "추천 레시피", "Recommended recipes"))
     max_show = st.slider(t(lang, "표시 개수", "Show count"), 5, 50, 12)
     section_key = "results"
