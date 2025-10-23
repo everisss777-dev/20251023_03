@@ -109,12 +109,10 @@ lang = st.sidebar.selectbox(
     options=list(LANGUAGES.keys()),
     format_func=lambda k: LANGUAGES[k],
     index=0 if st.session_state.lang=="ko" else 1,
-    label_visibility="collapsed"
+    label_visibility="collapsed",
 )
 st.session_state.lang = lang
-_lang = lang
-st.session_state.lang = lang
-    _lang = lang  # safe alias for sidebar blocks & params
+_lang = lang  # safe alias for sidebar blocks & params
 
     st.sidebar.markdown("### 🔗 " + t(lang, "공유 링크 만들기", "Create share link"))
 
