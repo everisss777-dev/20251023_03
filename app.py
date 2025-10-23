@@ -181,9 +181,16 @@ def main():
             res = sum_nutrition(items)
             st.write(res)
 
-    st.markdown("### 🎵 " + t(lang, "요리할 때 들을 음악", "Music to cook with"))
-    mood = st.selectbox(t(lang, "무드 선택", "Choose a mood"), ["chill", "energy", "focus", "retro", "k-pop", "lofi"])
-    st.write(f"[Spotify]({spotify_search_link(mood+' cooking playlist')}) | [YouTube]({youtube_search_link(mood+' cooking playlist')})")
+    st.sidebar.markdown("### 🎵 " + t(lang, "요리할 때 들을 음악", "Music to cook with"))
+mood = st.sidebar.selectbox(
+    t(lang, "무드 선택", "Choose a mood"),
+    ["chill", "energy", "focus", "retro", "k-pop", "lofi"],
+    key="sidebar_mood"
+)
+st.sidebar.write(
+    "[Spotify](" + spotify_search_link(mood + " cooking playlist") + ") | "
+    "[YouTube](" + youtube_search_link(mood + " cooking playlist") + ")"
+)
 
     params = {"lang": lang, "have": ",".join(have_list),
               "allergy": ",".join(k for k,v in allergy.items() if v), "mood": mood}
