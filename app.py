@@ -102,17 +102,19 @@ def main():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
     init_state()
 
+    _lang = st.session_state.get("lang", "ko")  # predefine safe alias
     # Language select (kept in sidebar)
     st.sidebar.markdown("### 🌐 Language / 언어")
 lang = st.sidebar.selectbox(
     " ",
     options=list(LANGUAGES.keys()),
     format_func=lambda k: LANGUAGES[k],
-    index=0 if st.session_state.lang=="ko" else 1,
-    label_visibility="collapsed"
+    index=0 if _lang == "ko" else 1,
+    label_visibility="collapsed",
 )
-st.session_state.lang = lang
-_lang = lang
+if lang != _lang:
+    st.session_state["lang"] = lang
+    _lang = lang
 st.session_state.lang = lang
     _lang = lang  # safe alias for sidebar blocks & params
 
