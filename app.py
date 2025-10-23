@@ -167,14 +167,15 @@ def main():
             recipe_card(row, lang, section_key)
 
     # ----- Sidebar: Nutrition calculator -----
-st.sidebar.markdown("### 🧮 " + ("영양소 계산기" if lang=="ko" else "Nutrition calculator"))
+_lang = st.session_state.get("lang", "ko")  # safe language accessor
+st.sidebar.markdown("### 🧮 " + ("영양소 계산기" if _lang=="ko" else "Nutrition calculator"))
 with st.sidebar.form("nutri"):
-    st.write("재료와 중량(그램) 입력" if lang=="ko" else "Enter ingredients and grams")
+    st.write("재료와 중량(그램) 입력" if _lang=="ko" else "Enter ingredients and grams")
 
     def ing_row(idx:int, default_g:int=0):
         c1, c2 = st.columns([3, 2], gap="small")
         with c1:
-            ing = st.text_input(("재료 " if lang=="ko" else "Ingredient ") + str(idx), key=f"n_ing{idx}")
+            ing = st.text_input(("재료 " if _lang=="ko" else "Ingredient ") + str(idx), key=f"n_ing{idx}")
         with c2:
             g = st.number_input(f"g{idx}", min_value=0, value=default_g, key=f"n_g{idx}")
         return ing, g
@@ -183,7 +184,7 @@ with st.sidebar.form("nutri"):
     ing2, g2 = ing_row(2, 0)
     ing3, g3 = ing_row(3, 0)
 
-    submitted = st.form_submit_button("계산" if lang=="ko" else "Calculate")
+    submitted = st.form_submit_button("계산" if _lang=="ko" else "Calculate")
     if submitted:
         items = [(ing1, g1), (ing2, g2), (ing3, g3)]
         res = sum_nutrition(items)
@@ -191,9 +192,10 @@ with st.sidebar.form("nutri"):
 
 # ----- Sidebar: Music -----
 # ----- Sidebar: Music -----
-    st.sidebar.markdown("### 🎵 " + t(lang, "요리할 때 들을 음악", "Music to cook with"))
+# ----- Sidebar: Music -----
+    st.sidebar.markdown("### 🎵 " + ("요리할 때 들을 음악" if _lang=="ko" else "Music to cook with"))
     mood = st.sidebar.selectbox(
-        t(lang, "무드 선택", "Choose a mood"),
+        ("무드 선택" if _lang=="ko" else "Choose a mood"),
         ["chill", "energy", "focus", "retro", "k-pop", "lofi"],
         key="sidebar_mood"
     )
