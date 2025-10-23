@@ -166,31 +166,31 @@ def main():
         for _, row in fav_df.iterrows():
             recipe_card(row, lang, section_key)
 
-    st.markdown("### 🧮 " + t(lang, "영양소 계산기", "Nutrition calculator"))
-    with st.form("nutri"):
-        st.write(t(lang, "재료와 중량(그램) 입력", "Enter ingredients and grams"))
-        ing1 = st.text_input(t(lang, "재료 1", "Ingredient 1"))
-        g1 = st.number_input("g1", min_value=0, value=100)
-        ing2 = st.text_input(t(lang, "재료 2", "Ingredient 2"))
-        g2 = st.number_input("g2", min_value=0, value=0)
-        ing3 = st.text_input(t(lang, "재료 3", "Ingredient 3"))
-        g3 = st.number_input("g3", min_value=0, value=0)
-        submitted = st.form_submit_button(t(lang, "계산", "Calculate"))
-        if submitted:
-            items = [(ing1, g1), (ing2, g2), (ing3, g3)]
-            res = sum_nutrition(items)
-            st.write(res)
+    st.sidebar.markdown("### 🧮 " + t(lang, "영양소 계산기", "Nutrition calculator"))
+with st.sidebar.form("nutri"):
+    st.write(t(lang, "재료와 중량(그램) 입력", "Enter ingredients and grams"))
+    ing1 = st.text_input(t(lang, "재료 1", "Ingredient 1"), key="n_ing1")
+    g1 = st.number_input("g1", min_value=0, value=100, key="n_g1")
+    ing2 = st.text_input(t(lang, "재료 2", "Ingredient 2"), key="n_ing2")
+    g2 = st.number_input("g2", min_value=0, value=0, key="n_g2")
+    ing3 = st.text_input(t(lang, "재료 3", "Ingredient 3"), key="n_ing3")
+    g3 = st.number_input("g3", min_value=0, value=0, key="n_g3")
+    submitted = st.form_submit_button(t(lang, "계산", "Calculate"))
+    if submitted:
+        items = [(ing1, g1), (ing2, g2), (ing3, g3)]
+        res = sum_nutrition(items)
+        st.write(res)
 
+    # ----- Move Music block into the sidebar -----
     st.sidebar.markdown("### 🎵 " + t(lang, "요리할 때 들을 음악", "Music to cook with"))
-mood = st.sidebar.selectbox(
-    t(lang, "무드 선택", "Choose a mood"),
-    ["chill", "energy", "focus", "retro", "k-pop", "lofi"],
-    key="sidebar_mood"
-)
-st.sidebar.write(
-    "[Spotify](" + spotify_search_link(mood + " cooking playlist") + ") | "
-    "[YouTube](" + youtube_search_link(mood + " cooking playlist") + ")"
-)
+    mood = st.sidebar.selectbox(
+        t(lang, "무드 선택", "Choose a mood"),
+        ["chill", "energy", "focus", "retro", "k-pop", "lofi"],
+        key="sidebar_mood"
+    )
+    link_str = "[Spotify](" + spotify_search_link(mood + " cooking playlist") + ") | " + "[YouTube](" + youtube_search_link(mood + " cooking playlist") + ")"
+    st.sidebar.write(link_str)
+    # --------------------------------------------
 
     params = {"lang": lang, "have": ",".join(have_list),
               "allergy": ",".join(k for k,v in allergy.items() if v), "mood": mood}
